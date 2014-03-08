@@ -27,10 +27,8 @@
 			
 			var doc = null;
 			var select = null;
-			function main(ansi)
+			function main(rows, columns, ansi)
 			{					
-				var rows = 250;
-				var columns = 80;
 				var charBounds = new ANSI.Bounds(9, 16);			
 				
 				doc = new ANSI.Document(charBounds, rows, columns);
@@ -66,7 +64,13 @@
 							document.body.removeChild(doc.ANSICanvas.Canvas);
 						
 						select.disabled = true;
-						ANSI.Text("ANSIFiles/" + select.value + ".txt", main);
+						ANSI.Text("ANSIFiles/" + select.value + ".txt", function(ansi)
+						{
+							var option = select.options[select.selectedIndex];
+							var rows = parseInt(option.getAttribute("data-rows") || 25);
+							var columns = parseInt(option.getAttribute("data-columns") || 80);
+							main(rows, columns, ansi);
+						});
 					}
 				});
 			});
@@ -79,7 +83,7 @@
 				<option>Choose an ANSI...</option>
 				<option>ds_moon.ans</option>
 				<option>flower.ans</option>
-				<option>besthpav.209.ans</option>
+				<option data-rows="200">besthpav.209.ans</option>
 			</select>
 		</div>
 	</body>
