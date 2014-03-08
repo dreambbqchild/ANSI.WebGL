@@ -18,6 +18,14 @@
 		var state = STATES.FREE_TEXT;
 		var rendered = false;
 		
+		function cursorSequence()
+		{
+			if(sequence[0].length === 0)
+				return 1;
+			
+			return parseInt(sequence[0]);
+		}
+				
 		function cursorPosition()
 		{
 			var x = 0;
@@ -33,22 +41,22 @@
 	
 		function cursorUp()
 		{
-			cursor.Y = cursor.Y - parseInt(sequence[0]);
+			cursor.Y = cursor.Y - cursorSequence();
 		}
 	
 		function cursorDown()
 		{
-			cursor.Y = cursor.Y + parseInt(sequence[0]);
+			cursor.Y = cursor.Y + cursorSequence();
 		}
 	
 		function cursorForeward()
 		{
-			cursor.X = cursor.X + parseInt(sequence[0]);
+			cursor.X = cursor.X + cursorSequence();
 		}
 	
 		function cursorBackward()
 		{
-			cursor.X = cursor.X - parseInt(sequence[0]);
+			cursor.X = cursor.X - cursorSequence();
 		}
 	
 		function saveCursorPosition()

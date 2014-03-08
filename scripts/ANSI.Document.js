@@ -6,32 +6,25 @@
 		
 	window.ANSI.Document = function(characterBounds, rows, columns)
 	{
-		function Enumerator()
+		function Enumerator(dirtyQueue)
 		{
+			dirtyQueue.splice(0, 0, null);
 			var row = 0;
 			var col = -1;
 			
 			this.moveNext = function()
 			{
-				if(row === rows)
-					return false;
-			
-				if(++col === columns)
-				{
-					col = 0;
-					if(++row === rows)
-						return false;
-				}
-				
-				return true;
+				dirtyQueue.shift();
+				return dirtyQueue.length !== 0;
 			}
 			
 			this.current = function()
 			{
-				return characters[row][col];
+				return dirtyQueue[0];
 			}
 		}
-		
+	
+		var dirtyChars = [];	
 		var foreColorState = new ANSI.Color();
 		var backColorState = new ANSI.Color();
 		var ansiCanvas = new ANSI.Canvas(this, characterBounds, new ANSI.Bounds(characterBounds.Width * columns, characterBounds.Height * rows));
@@ -51,6 +44,7 @@
 			characters[y][x].RGBFore = foreColorState.Color;
 			characters[y][x].RGBBack = backColorState.Color;
 			characters[y][x].CharacterIndex = c.charCodeAt(0);
+			dirtyChars.push(characters[y][x]);
 		}
 		
 		this.clearCharAt = function(x, y)
@@ -58,6 +52,7 @@
 			characters[y][x].RGBFore = null;
 			characters[y][x].RGBBack = null;
 			characters[y][x].CharacterIndex = 32;
+			dirtyChars.push(characters[y][x]);
 		}
 		
 		this.defaultColor = function()
@@ -69,7 +64,9 @@
 		
 		this.getEnumerator = function() 
 		{
-			return new Enumerator();
+			var enumerator = new Enumerator(dirtyChars);
+			dirtyChars = [];
+			return enumerator;
 		};
 		
 		Object.defineProperty(this, "ForeColorState", 

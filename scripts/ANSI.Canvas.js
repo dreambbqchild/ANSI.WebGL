@@ -42,7 +42,7 @@
 		var shaders = [];
 		canvas.width = canvasBounds.Width;
 		canvas.height = canvasBounds.Height;
-		var gl = setupWebGL(canvas);
+		var gl = setupWebGL(canvas, {preserveDrawingBuffer: true});
 		var program = makeUseProgram(gl);
 		
 		var positionLocation = gl.getAttribLocation(program, "a_position");
@@ -81,13 +81,12 @@
 		var backColorLocation = gl.getUniformLocation(program, "backColor");
 			
 		var buffer = gl.createBuffer();
-		
+		gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+		gl.enableVertexAttribArray(positionLocation);
+		gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+			
 		this.render = function()
-		{
-			gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-			gl.enableVertexAttribArray(positionLocation);
-			gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
-	
+		{	
 			var enumerator = doc.getEnumerator();
 			while(enumerator.moveNext())
 			{
