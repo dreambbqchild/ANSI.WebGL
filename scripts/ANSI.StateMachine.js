@@ -149,15 +149,5 @@
 			
 			return rendered;
 		}
-		
-		Object.defineProperty(this, "Foreground", 
-		{
-			get: function() {return foreground; },
-		});
-		
-		Object.defineProperty(this, "Background", 
-		{
-			get: function() {return background;},
-		});
 	}
 })();
