@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Ansi</title>
+		<style type="text/css">
+			html, body {padding: 0px; margin: 0px; background: black;}
+		</style>
+		<script type="text/javascript" src="scripts/webgl-utils.js"></script>
+		<script type="text/javascript">
+			function require()
+			{
+				for(var i = 0; i < arguments.length; i++)
+				{
+					var script = document.querySelector("script[src='scripts/" + arguments[i] + ".js']");
+					if(script === null)
+					{
+						script = document.createElement("script");
+						script.setAttribute("type", "text/javascript");
+						script.setAttribute("src", "scripts/" + arguments[i] + ".js");
+						script.async = false;
+						document.head.appendChild(script);
+					}
+				}
+			}
+			
+			require("ANSI", "ANSI.Bounds", "ANSI.Canvas", "ANSI.Character", "ANSI.Color", "ANSI.Cursor", "ANSI.Document", "ANSI.StateMachine", "ANSI.Text");
+			
+			var doc = null;
+			var select = null;
+			function main(ansi)
+			{					
+				var rows = 25;
+				var columns = 80;
+				var charBounds = new ANSI.Bounds(9, 16);			
+				
+				doc = new ANSI.Document(charBounds, rows, columns);
+				var cursor = new ANSI.Cursor(doc);
+				var stateMachine = new ANSI.StateMachine(cursor, doc);	
+				document.body.appendChild(doc.ANSICanvas.Canvas);
+							
+				function render()
+				{
+					while(ansi.moveNext())
+					{
+						if(stateMachine.processChar(ansi.current()))
+						{
+							window.requestAnimationFrame(render);
+							break;
+						}
+					}
+					
+					if(ansi.current() === null)
+						select.disabled = false;
+				}
+				
+				render();
+			}
+			
+			window.addEventListener("load", function() {	
+				select = document.querySelector("select");
+				select.addEventListener("change", function()
+				{
+					if(select.selectedIndex)
+					{
+						if(doc)
+							document.body.removeChild(doc.ANSICanvas.Canvas);
+						
+						select.disabled = true;
+						ANSI.Text("ANSIFiles/" + select.value + ".txt", main);
+					}
+				});
+			});
+			
+		</script>
+	<head>
+	<body>
+		<div>
+			<select>
+				<option>Choose an ANSI...</option>
+				<option>ds_moon.ans</option>
+				<option>flower.ans</option>
+			</select>
+		</div>
+	</body>
+</html>
